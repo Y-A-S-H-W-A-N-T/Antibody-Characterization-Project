@@ -220,6 +220,7 @@ const AntibodyAnalysis = () => {
             </CardHeader>
             <CardContent className="h-[calc(100%-4rem)]">
               <MolstarViewer
+                key={selectedAntibody}
                 localPdbPath={`/pdb/${selectedAntibody}.pdb`}
                 height="100%"
               />
