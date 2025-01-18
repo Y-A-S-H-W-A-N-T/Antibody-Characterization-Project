@@ -90,8 +90,8 @@ const AntibodyAnalysis = () => {
     fetchData();
   }, []);
 
-  const getCellColor = (property: keyof AntibodyData, value: number) => {
-    if (property === 'Antibody') return '';
+  const getCellColor = (property: keyof AntibodyData, value: string | number) => {
+    if (property === 'Antibody' || typeof value !== 'number') return '';
     
     const range = PROPERTY_RANGES[property as keyof typeof PROPERTY_RANGES];
     if (!range) return '';
