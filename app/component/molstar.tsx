@@ -63,7 +63,7 @@ export default function MolstarViewer({
       }
       initializingRef.current = false;
     };
-  }, []); // Empty dependency array to ensure single initialization
+  }, [localPdbPath, pdbId]); // Empty dependency array to ensure single initialization
 
   useEffect(() => {
     const loadStructure = async () => {
@@ -92,18 +92,21 @@ export default function MolstarViewer({
           position: 'absolute',
           width: '100%',
           height: '100%',
+          overflow: 'hidden', // Ensure content doesn't overflow
         }}
       />
       {loading && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'rgba(255, 255, 255, 0.8)',
-          padding: '1rem',
-          borderRadius: '0.5rem'
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'rgba(255, 255, 255, 0.8)',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+          }}
+        >
           Loading...
         </div>
       )}

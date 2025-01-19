@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -5,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, ChevronDown, ChevronUp } from "lucide-react";
 import Papa from 'papaparse';
-import MolstarViewer from './molstar';
+import MolstarViewer from '../../component/molstar';
 
 interface AntibodyData {
   Antibody: string;
@@ -90,8 +91,8 @@ const AntibodyAnalysis = () => {
     fetchData();
   }, []);
 
-  const getCellColor = (property: keyof AntibodyData, value: number) => {
-    if (property === 'Antibody') return '';
+  const getCellColor = (property: keyof AntibodyData, value: string | number) => {
+    if (property === 'Antibody' || typeof value !== 'number') return '';
     
     const range = PROPERTY_RANGES[property as keyof typeof PROPERTY_RANGES];
     if (!range) return '';
@@ -131,8 +132,7 @@ const AntibodyAnalysis = () => {
         <Card className="bg-white bg-[radial-gradient(circle_at_1px_1px,#e5e7eb_1px,transparent_0)] bg-[size:40px_40px]">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-800">
-              Antibody Properties Analysis
-            </CardTitle>
+            Antibody Score Card            </CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
