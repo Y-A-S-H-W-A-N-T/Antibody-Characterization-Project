@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, ChevronDown, ChevronUp } from "lucide-react";
 import Papa from 'papaparse';
 import MolstarViewer from './molstar';
+import { MolstarWrapper, ResidueProperty } from '../lib/MostarWrapper';
 
 interface AntibodyData {
   Antibody: string;
@@ -50,6 +52,53 @@ const PROPERTY_RANGES: Record<keyof Omit<AntibodyData, 'Antibody'>, { low: numbe
   'Extinction coeff': { low: 45000, high: 55000 }
 };
 
+interface PropertySelectorProps {
+  onPropertyChange: (property: ResidueProperty) => void;
+}
+
+const PropertySelector: React.FC<PropertySelectorProps> = ({ onPropertyChange }) => {
+  const properties: { value: ResidueProperty; label: string }[] = [
+    { value: 'hydrophobicity', label: 'Hydrophobicity' },
+    { value: 'sequence', label: 'Sequence' },
+    { value: 'secondary-structure', label: 'Secondary Structure' },
+    { value: 'chain-id', label: 'Chain ID' },
+    { value: 'b-factor', label: 'B-Factor' }
+  ];
+
+  return (
+    <Card className="mb-4">
+      <CardHeader>
+        <CardTitle className="text-sm font-medium">Residue Property</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Select onValueChange={(value: string) => onPropertyChange(value as ResidueProperty)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select property" />
+          </SelectTrigger>
+          <SelectContent>
+            {properties.map((prop) => (
+              <SelectItem key={prop.value} value={prop.value}>
+                {prop.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
+  );
+};
+
+
+// const AntibodyAnalysis = () => {
+//   const [data, setData] = useState<AntibodyData[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const [sortConfig, setSortConfig] = useState<{
+//     key: keyof AntibodyData | null;
+//     direction: 'asc' | 'desc';
+//   }>({ key: null, direction: 'asc' });
+//   const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null);
+
 const AntibodyAnalysis = () => {
   const [data, setData] = useState<AntibodyData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +108,8 @@ const AntibodyAnalysis = () => {
     direction: 'asc' | 'desc';
   }>({ key: null, direction: 'asc' });
   const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null);
+  const [molstarWrapper, setMolstarWrapper] = useState<MolstarWrapper | null>(null);
+
 
   // Get all columns excluding 'Antibody' for initial display
   const allColumns: (keyof AntibodyData)[] = ['Antibody', ...Object.keys(PROPERTY_RANGES) as (keyof AntibodyData)[]];
@@ -124,6 +175,13 @@ const AntibodyAnalysis = () => {
   const handleViewStructure = (antibodyId: string) => {
     setSelectedAntibody(selectedAntibody === antibodyId ? null : antibodyId);
   };
+
+  const handlePropertyChange = (property: ResidueProperty) => {
+    if (molstarWrapper) {
+      molstarWrapper.setColorTheme(property);
+    }
+  };
+
 
   return (
     <div className="flex w-full gap-4">
@@ -202,11 +260,10 @@ const AntibodyAnalysis = () => {
           </CardContent>
         </Card>
       </div>
-
       {selectedAntibody && (
         <div className="w-[600px]">
-          <Card className="h-full">
-            <CardHeader>
+          <Card>
+            <CardHeader className="border-b">
               <CardTitle className="flex justify-between items-center">
                 <span>{selectedAntibody} Structure</span>
                 <Button
@@ -218,11 +275,16 @@ const AntibodyAnalysis = () => {
                 </Button>
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-[calc(100%-4rem)]">
-              <MolstarViewer
-                localPdbPath={`/pdb/${selectedAntibody}.pdb`}
-                height="100%"
-              />
+            <CardContent className="p-4">
+              <PropertySelector onPropertyChange={handlePropertyChange} />
+              <div className="h-[800px] overflow-y-auto">
+                <MolstarViewer
+                  key={selectedAntibody}
+                  localPdbPath={`/pdb/${selectedAntibody}.pdb`}
+                  height="100%"
+                  onWrapperReady={setMolstarWrapper}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -232,3 +294,4 @@ const AntibodyAnalysis = () => {
 };
 
 export default AntibodyAnalysis;
+
