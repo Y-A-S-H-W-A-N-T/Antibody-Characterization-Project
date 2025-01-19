@@ -1,12 +1,13 @@
-// lib/MolstarWrapper.ts
 import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context'
 import { createPluginUI } from 'molstar/lib/mol-plugin-ui'
 import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18'
 import { PluginUISpec } from 'molstar/lib/mol-plugin-ui/spec'
 import { PluginConfig } from 'molstar/lib/mol-plugin/config'
 import { 
-  StructureRepresentationPresetProvider, 
+  StructureRepresentationPresetProvider,
 } from 'molstar/lib/mol-plugin-state/builder/structure/representation-preset'
+
+export type ResidueProperty = 'hydrophobicity' | 'sequence' | 'secondary-structure' | 'chain-id' | 'b-factor';
 
 export class MolstarWrapper {
   private resolveInit!: () => void
@@ -15,6 +16,7 @@ export class MolstarWrapper {
   plugin!: PluginUIContext;
   private target: HTMLDivElement | null = null;
   private disposed = false;
+  private currentStructure: any = null;
 
   constructor() {
     this.initialized = new Promise<boolean>(res => {
@@ -36,9 +38,9 @@ export class MolstarWrapper {
     try {
       const spec: PluginUISpec = {
         config: [
-          [PluginConfig.VolumeStreaming.Enabled, false],
-          [PluginConfig.Viewport.ShowAnimation, false],
-          [PluginConfig.Viewport.ShowSelectionMode, false],
+          [PluginConfig.VolumeStreaming.Enabled, true],
+          [PluginConfig.Viewport.ShowAnimation, true],
+          [PluginConfig.Viewport.ShowSelectionMode, true],
           [PluginConfig.Viewport.ShowControls, true],
         ],
         layout: {
@@ -65,6 +67,56 @@ export class MolstarWrapper {
     }
   }
 
+  async setColorTheme(property: ResidueProperty) {
+    if (!this.plugin || !this.currentStructure) return;
+
+    const themeMap = {
+      'hydrophobicity': 'hydrophobicity',
+      'sequence': 'sequence-id',
+      'secondary-structure': 'secondary-structure',
+      'chain-id': 'chain-id',
+      'b-factor': 'b-factor'
+    };
+
+    const theme = themeMap[property];
+    
+    try {
+      // Get the current state tree
+      const state = this.plugin.state.data;
+      const update = state.build();
+
+      // Find all structure component refs
+      const structures = state.select(state.root.obj.type === 'Structure');
+      
+      if (structures.length === 0) return;
+
+      // Update the color theme for each structure
+      for (const structure of structures) {
+        const components = structure.obj?.data.representation?.components;
+        if (!components) continue;
+
+        for (const c of components) {
+          if (!c.cell.transform.params) continue;
+          
+          // Update the color theme parameter
+          update.to(c.cell.transform.ref).update((old: any) => ({
+            ...old,
+            colorTheme: { name: theme }
+          }));
+        }
+      }
+
+      // Apply the updates
+      await state.updateTree(update);
+      
+      // Commit the changes and trigger a render
+      await this.plugin.canvas3d?.requestDraw();
+      
+    } catch (error) {
+      console.error('Error updating color theme:', error);
+    }
+  }
+
   async loadPdb(source: string, isLocal: boolean = false) {
     if (!this.plugin || this.disposed) return;
 
@@ -77,10 +129,11 @@ export class MolstarWrapper {
       const trajectory = await this.plugin.builders.structure.parseTrajectory(data, 'pdb');
       const model = await this.plugin.builders.structure.createModel(trajectory);
       const structure = await this.plugin.builders.structure.createStructure(model);
+      
+      this.currentStructure = structure;
 
-      // Apply molecular surface representation
       await this.plugin.builders.structure.representation.addRepresentation(structure, {
-        type: 'molecular-surface' as const,
+        type: 'molecular-surface',
         typeParams: { 
           alpha: 1,
           smoothness: 1,
@@ -92,24 +145,6 @@ export class MolstarWrapper {
         }
       });
 
-      // Reset view to focus on the structure
-      // if (this.plugin.canvas3d) {
-      //   // Wait for a frame to ensure the structure is loaded
-      //   await new Promise(resolve => setTimeout(resolve, 0));
-        
-      //   // Update state and trigger render
-      //   await this.plugin.state.updateBehavior();
-        
-      //   // Adjust viewport
-      //   const canvas = this.plugin.canvas3d;
-      //   canvas.setPerspectiveCamera();
-        
-      //   // Reset camera position
-      //   if (this.plugin.state.data.select('3d-view')) {
-      //     await this.plugin.state.updateBehavior('camera.reset');
-      //   }
-      // }
-
     } catch (error) {
       console.error('Error loading PDB:', error);
     }
@@ -117,7 +152,6 @@ export class MolstarWrapper {
 
   dispose() {
     if (this.disposed) return;
-    
     if (this.plugin) {
       this.plugin.dispose();
     }

@@ -1,4 +1,4 @@
-import PdbStructureViewer from './component/TableViewer'
+import PdbStructureViewer from './components/TableViewer'
 
 export default function Home() {
   return (
