@@ -3,11 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, ChevronDown, ChevronUp } from "lucide-react";
 import Papa from 'papaparse';
-import MolstarViewer from './molstar';
-import { MolstarWrapper, ResidueProperty } from '../lib/MostarWrapper';
+import MolstarViewerEnhanced from './MolstarViewerEnhanced';
 
 interface AntibodyData {
   Antibody: string;
@@ -31,6 +29,7 @@ interface AntibodyData {
   'SAP score': number;
 }
 
+
 const PROPERTY_RANGES: Record<keyof Omit<AntibodyData, 'Antibody'>, { low: number; high: number }> = {
   'Isoelectric point': { low: 6, high: 8 },
   'Hydrophobicity': { low: -0.3, high: -0.2 },
@@ -52,53 +51,6 @@ const PROPERTY_RANGES: Record<keyof Omit<AntibodyData, 'Antibody'>, { low: numbe
   'Extinction coeff': { low: 45000, high: 55000 }
 };
 
-interface PropertySelectorProps {
-  onPropertyChange: (property: ResidueProperty) => void;
-}
-
-const PropertySelector: React.FC<PropertySelectorProps> = ({ onPropertyChange }) => {
-  const properties: { value: ResidueProperty; label: string }[] = [
-    { value: 'hydrophobicity', label: 'Hydrophobicity' },
-    { value: 'sequence', label: 'Sequence' },
-    { value: 'secondary-structure', label: 'Secondary Structure' },
-    { value: 'chain-id', label: 'Chain ID' },
-    { value: 'b-factor', label: 'B-Factor' }
-  ];
-
-  return (
-    <Card className="mb-4">
-      <CardHeader>
-        <CardTitle className="text-sm font-medium">Residue Property</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Select onValueChange={(value: string) => onPropertyChange(value as ResidueProperty)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select property" />
-          </SelectTrigger>
-          <SelectContent>
-            {properties.map((prop) => (
-              <SelectItem key={prop.value} value={prop.value}>
-                {prop.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </CardContent>
-    </Card>
-  );
-};
-
-
-// const AntibodyAnalysis = () => {
-//   const [data, setData] = useState<AntibodyData[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-//   const [sortConfig, setSortConfig] = useState<{
-//     key: keyof AntibodyData | null;
-//     direction: 'asc' | 'desc';
-//   }>({ key: null, direction: 'asc' });
-//   const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null);
-
 const AntibodyAnalysis = () => {
   const [data, setData] = useState<AntibodyData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,8 +60,6 @@ const AntibodyAnalysis = () => {
     direction: 'asc' | 'desc';
   }>({ key: null, direction: 'asc' });
   const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null);
-  const [molstarWrapper, setMolstarWrapper] = useState<MolstarWrapper | null>(null);
-
 
   // Get all columns excluding 'Antibody' for initial display
   const allColumns: (keyof AntibodyData)[] = ['Antibody', ...Object.keys(PROPERTY_RANGES) as (keyof AntibodyData)[]];
@@ -141,17 +91,6 @@ const AntibodyAnalysis = () => {
     fetchData();
   }, []);
 
-  const getCellColor = (property: keyof AntibodyData, value: string | number) => {
-    if (property === 'Antibody' || typeof value !== 'number') return '';
-    
-    const range = PROPERTY_RANGES[property as keyof typeof PROPERTY_RANGES];
-    if (!range) return '';
-
-    if (value < range.low) return 'bg-red-100 transition-colors duration-200';
-    if (value > range.high) return 'bg-green-100 transition-colors duration-200';
-    return 'bg-amber-100 transition-colors duration-200';
-  };
-
   const handleSort = (key: keyof AntibodyData) => {
     setSortConfig({
       key,
@@ -172,20 +111,24 @@ const AntibodyAnalysis = () => {
     });
   }, [data, sortConfig]);
 
+  const getCellColor = (property: keyof AntibodyData, value: string | number) => {
+    if (property === 'Antibody' || typeof value !== 'number') return '';
+    
+    const range = PROPERTY_RANGES[property as keyof typeof PROPERTY_RANGES];
+    if (!range) return '';
+
+    if (value < range.low) return 'bg-red-100 transition-colors duration-200';
+    if (value > range.high) return 'bg-green-100 transition-colors duration-200';
+    return 'bg-amber-100 transition-colors duration-200';
+  };
+
   const handleViewStructure = (antibodyId: string) => {
     setSelectedAntibody(selectedAntibody === antibodyId ? null : antibodyId);
   };
 
-  const handlePropertyChange = (property: ResidueProperty) => {
-    if (molstarWrapper) {
-      molstarWrapper.setColorTheme(property);
-    }
-  };
-
-
   return (
     <div className="flex w-full gap-4">
-      <div className={`flex-1 ${selectedAntibody ? 'w-2/3' : 'w-full'}`}>
+      <div className={`transition-all duration-300 ${selectedAntibody ? 'w-2/3' : 'w-full'}`}>
         <Card className="bg-white bg-[radial-gradient(circle_at_1px_1px,#e5e7eb_1px,transparent_0)] bg-[size:40px_40px]">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-800">
@@ -208,7 +151,7 @@ const AntibodyAnalysis = () => {
                         <TableHead 
                           key={column}
                           className={`text-gray-700 font-semibold cursor-pointer hover:bg-gray-50 ${
-                            column === 'Antibody' ? 'sticky left-0 bg-white' : ''
+                            column === 'Antibody' ? 'sticky left-0 bg-white z-10' : ''
                           }`}
                           onClick={() => handleSort(column)}
                         >
@@ -222,7 +165,7 @@ const AntibodyAnalysis = () => {
                           </div>
                         </TableHead>
                       ))}
-                      <TableHead className="sticky right-0 bg-white">Actions</TableHead>
+                      <TableHead className="sticky right-0 bg-white z-10">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -232,7 +175,7 @@ const AntibodyAnalysis = () => {
                           <TableCell
                             key={column}
                             className={`${
-                              column === 'Antibody' ? 'sticky left-0 bg-white' : ''
+                              column === 'Antibody' ? 'sticky left-0 bg-white z-10' : ''
                             } ${getCellColor(column, antibody[column])}`}
                           >
                             {typeof antibody[column] === 'number'
@@ -240,7 +183,7 @@ const AntibodyAnalysis = () => {
                               : antibody[column]}
                           </TableCell>
                         ))}
-                        <TableCell className="sticky right-0 bg-white">
+                        <TableCell className="sticky right-0 bg-white z-10">
                           <Button
                             variant={selectedAntibody === antibody.Antibody ? "default" : "outline"}
                             size="sm"
@@ -260,31 +203,27 @@ const AntibodyAnalysis = () => {
           </CardContent>
         </Card>
       </div>
+
       {selectedAntibody && (
-        <div className="w-[600px]">
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle className="flex justify-between items-center">
-                <span>{selectedAntibody} Structure</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedAntibody(null)}
-                >
-                  Close
-                </Button>
+        <div className="w-1/3 transition-all duration-300">
+          <Card className="sticky top-4">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-xl font-bold">
+                {selectedAntibody} Structure
               </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedAntibody(null)}
+              >
+                Close
+              </Button>
             </CardHeader>
-            <CardContent className="p-4">
-              <PropertySelector onPropertyChange={handlePropertyChange} />
-              <div className="h-[800px] overflow-y-auto">
-                <MolstarViewer
-                  key={selectedAntibody}
-                  localPdbPath={`/pdb/${selectedAntibody}.pdb`}
-                  height="100%"
-                  onWrapperReady={setMolstarWrapper}
-                />
-              </div>
+            <CardContent className="p-0">
+              <MolstarViewerEnhanced
+                key={selectedAntibody}
+                localPdbPath={`/pdb/${selectedAntibody}.pdb`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -294,4 +233,3 @@ const AntibodyAnalysis = () => {
 };
 
 export default AntibodyAnalysis;
-

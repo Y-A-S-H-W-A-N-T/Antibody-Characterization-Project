@@ -1,4 +1,5 @@
 'use client'
+
 import { useEffect, useRef, useState } from 'react'
 import { MolstarWrapper } from '../lib/MostarWrapper'
 import 'molstar/lib/mol-plugin-ui/skin/light.scss'
@@ -8,7 +9,6 @@ interface MolstarViewerProps {
   localPdbPath?: string
   height?: string | number
   width?: string | number
-  onWrapperReady?: (wrapper: MolstarWrapper) => void
 }
 
 export default function MolstarViewer({
@@ -16,7 +16,6 @@ export default function MolstarViewer({
   localPdbPath,
   height = 480,
   width = '100%',
-  onWrapperReady,
 }: MolstarViewerProps) {
   const [loading, setLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,9 +37,6 @@ export default function MolstarViewer({
         
         if (mounted) {
           wrapperRef.current = wrapper;
-          if (onWrapperReady) {
-            onWrapperReady(wrapper);
-          }
           if (pdbId) {
             await wrapper.loadPdb(pdbId, false);
           } else if (localPdbPath) {
@@ -67,7 +63,7 @@ export default function MolstarViewer({
       }
       initializingRef.current = false;
     };
-  }, [onWrapperReady]);
+  }, []); // Empty dependency array to ensure single initialization
 
   useEffect(() => {
     const loadStructure = async () => {
