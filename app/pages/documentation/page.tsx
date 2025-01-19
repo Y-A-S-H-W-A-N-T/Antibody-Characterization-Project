@@ -1,7 +1,7 @@
 import React from "react";
 // Ensure the Header component path is correct
-import Header from "@/app/component/Header"; // Adjust path if needed
-import Footer from "@/app/component/Footer"
+import Header from "@/app/components/Header"; // Adjust path if needed
+import Footer from "@/app/components/Footer"
 const Documentation = () => {
   return (
     <main className="bg-gray-100 text-gray-800 min-h-screen ">

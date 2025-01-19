@@ -1,9 +1,9 @@
 "use client"
 // import { useState } from 'react';
 // import PdbStructureViewer from './component/TableViewer';
-import Header from './component/Header';
-import Footer from './component/Footer';
-import HeroSection from './component/Hero-section';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import HeroSection from './components/Hero-section';
 // import Documentation from './pages/Documentation'; 
 
 export default function Home() {
