@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, ChevronDown, ChevronUp } from "lucide-react";
 import Papa from 'papaparse';
 import MolstarViewer from '../../component/molstar';
+import Header from '@/app/component/Header'
 
 interface AntibodyData {
   Antibody: string;
@@ -129,6 +130,7 @@ const AntibodyAnalysis = () => {
   return (
     <div className="flex w-full gap-4">
       <div className={`flex-1 ${selectedAntibody ? 'w-2/3' : 'w-full'}`}>
+      
         <Card className="bg-white bg-[radial-gradient(circle_at_1px_1px,#e5e7eb_1px,transparent_0)] bg-[size:40px_40px]">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-gray-800">

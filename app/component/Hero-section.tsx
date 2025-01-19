@@ -98,12 +98,12 @@ const HeroSection: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
         >
-          <Link href="">
+          <Link href="/pages/table-viewer">
             <Button className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transform transition-all hover:scale-105 hover:shadow-lg">
               Explore Dashboard
             </Button>
           </Link>
-          <Link href="/documentation">
+          <Link href="/pages/documentation">
             <Button variant="outline" className="px-8 py-4 text-lg font-semibold border-2 border-gray-300 dark:border-gray-600 hover:border-blue-600 dark:hover:border-blue-400 rounded-lg transform transition-all hover:scale-105">
               View Documentation
             </Button>
