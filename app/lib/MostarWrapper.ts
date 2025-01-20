@@ -1,19 +1,24 @@
-import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
-import { createPluginUI } from 'molstar/lib/mol-plugin-ui';
-import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18';
-import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
-import { PluginConfig } from 'molstar/lib/mol-plugin/config';
-import { StateTransform } from 'molstar/lib/mol-state';
-import { Asset } from 'molstar/lib/mol-util/assets';
-import 'molstar/lib/mol-plugin-ui/skin/light.scss';
+import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context'
+import { createPluginUI } from 'molstar/lib/mol-plugin-ui'
+import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18'
+import { PluginUISpec } from 'molstar/lib/mol-plugin-ui/spec'
+import { PluginConfig } from 'molstar/lib/mol-plugin/config'
+import { 
+  StructureRepresentationPresetProvider,
+} from 'molstar/lib/mol-plugin-state/builder/structure/representation-preset'
+
+export type ResidueProperty = 'hydrophobicity' | 'sequence' | 'secondary-structure' | 'chain-id' | 'b-factor';
+export type Polymer = 'ball-and-stick' | 'cartoon' | 'backbone' | 'carbohydrate' | 'ellipsoid' | 'gaussian-surface' | 'gaussian-volume' | 'label' | 'line' | 'molecular-surface' | 'orientation' | 'point' | 'putty' | 'spacefill'
+
 
 export class MolstarWrapper {
-  private resolveInit!: () => void;
+  private resolveInit!: () => void
   initialized: Promise<boolean>;
   private initCalled = false;
   plugin!: PluginUIContext;
   private target: HTMLDivElement | null = null;
   private disposed = false;
+  private currentStructure: any = null;
 
   constructor() {
     this.initialized = new Promise<boolean>(res => {
@@ -22,7 +27,9 @@ export class MolstarWrapper {
   }
 
   setTarget(element: HTMLDivElement) {
-    if (this.disposed) throw new Error('Cannot set target on disposed wrapper');
+    if (this.disposed) {
+      throw new Error('Cannot set target on disposed wrapper');
+    }
     this.target = element;
   }
 
@@ -31,36 +38,25 @@ export class MolstarWrapper {
     this.initCalled = true;
 
     try {
-      const spec = {
-        ...DefaultPluginUISpec(),
-        layout: {
-          initial: {
-            isExpanded: false,
-            showControls: false,
-            regionState: {
-              left: 'hidden',
-              right: 'hidden',
-              bottom: 'hidden',
-              top: 'hidden'
-            }
-          }
-        },
-        components: {
-          remoteState: 'none',
-          controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' }
-        },
+      const spec: PluginUISpec = {
         config: [
-          [PluginConfig.VolumeStreaming.Enabled, false],
+          [PluginConfig.VolumeStreaming.Enabled, true],
           [PluginConfig.Viewport.ShowAnimation, true],
           [PluginConfig.Viewport.ShowSelectionMode, true],
           [PluginConfig.Viewport.ShowControls, true],
-          [PluginConfig.Viewport.ShowAnimation, false],
-        ]
+        ],
+        layout: {
+          initial: {
+            isExpanded: false,
+            showControls: true,
+          }
+        },
+        behaviors: []
       };
 
       this.plugin = await createPluginUI({
         target: this.target,
-        
+        spec,
         render: renderReact18
       });
 
@@ -73,82 +69,86 @@ export class MolstarWrapper {
     }
   }
 
-  async loadPdb(source: string, isLocal: boolean = false, polymer: string) {
-    if (!this.plugin || this.disposed) return;
+  async setColorTheme(property: ResidueProperty) {
+    if (!this.plugin || !this.currentStructure) return;
 
+    const themeMap = {
+      'hydrophobicity': 'hydrophobicity',
+      'sequence': 'sequence-id',
+      'secondary-structure': 'secondary-structure',
+      'chain-id': 'chain-id',
+      'b-factor': 'b-factor'
+    };
+
+    const theme = themeMap[property];
+    
     try {
-      await this.plugin.clear();
+      // Get the current state tree
+      const state = this.plugin.state.data;
+      const update = state.build();
 
-      const url = isLocal ? source : `https://files.rcsb.org/download/${source}.pdb`;
+      // Find all structure component refs
+      const structures = state.select(state.root.obj.type === 'Structure');
       
-      // Create a data object with proper asset handling
-      const data = await this.plugin.builders.data.download({ 
-        url: Asset.Url(url),
-        isBinary: false,
-        label: 'PDB File'
-      });
+      if (structures.length === 0) return;
 
-      // Parse the data into a trajectory
-      const trajectory = await this.plugin.builders.structure.parseTrajectory(data, 'pdb');
-      
-      // Create a model from the trajectory
-      const model = await this.plugin.builders.structure.createModel(trajectory);
-      
-      // Create a structure from the model
-      const structure = await this.plugin.builders.structure.createStructure(model);
+      // Update the color theme for each structure
+      for (const structure of structures) {
+        const components = structure.obj?.data.representation?.components;
+        if (!components) continue;
 
-      // Add cartoon representation
-      await this.plugin.builders.structure.representation.addRepresentation(structure, {
-        type: polymer,
-        color: 'chain-id',
-        size: 'uniform',
-      });
+        for (const c of components) {
+          if (!c.cell.transform.params) continue;
+          
+          // Update the color theme parameter
+          update.to(c.cell.transform.ref).update((old: any) => ({
+            ...old,
+            colorTheme: { name: theme }
+          }));
+        }
+      }
 
-      // Add ball-and-stick representation
-      await this.plugin.builders.structure.representation.addRepresentation(structure, {
-        type: polymer,
-        color: 'element-symbol',
-        size: 'uniform'
-      });
-
-      // Reset camera and update viewport
-      // await this.plugin.canvas3d?;
-      // this.plugin.canvas3d?.setProps({
-      //   postprocessing: {
-      //     occlusion: { name: 'on', params: { samples: 32, radius: 6, bias: 1.4 } },
-      //     outline: { name: 'on', params: { scale: 1, threshold: 0.33 } }
-      //   }
-      // });
+      // Apply the updates
+      await state.updateTree(update);
       
-      // Ensure proper sizing
-      this.plugin.canvas3d?.requestResize();
+      // Commit the changes and trigger a render
+      await this.plugin.canvas3d?.requestDraw();
       
-      return structure;
     } catch (error) {
-      console.error('Error loading PDB:', error);
-      throw error;
+      console.error('Error updating color theme:', error);
     }
   }
 
-  async updateColorTheme(theme: string) {
+  async loadPdb(source: string, isLocal: boolean = false, polymer: Polymer) {
     if (!this.plugin || this.disposed) return;
 
     try {
-      const update = this.plugin.state.data.build();
-      const representations = this.plugin.managers.structure.hierarchy.current.structures[0]?.components;
+      const url = isLocal ? source : `https://files.rcsb.org/download/${source}.pdb`;
+      const data = await this.plugin.builders.data.download(
+        { url },
+        { state: { isGhost: true } }
+      );
+      const trajectory = await this.plugin.builders.structure.parseTrajectory(data, 'pdb');
+      const model = await this.plugin.builders.structure.createModel(trajectory);
+      const structure = await this.plugin.builders.structure.createStructure(model);
       
-      if (!representations) return;
+      this.currentStructure = structure;
 
-      for (const repr of representations) {
-        update.to(repr.cell.transform.ref).update({
-          colorTheme: { name: theme }
-        });
-      }
+      await this.plugin.builders.structure.representation.addRepresentation(structure, {
+        type: polymer,
+        typeParams: { 
+          alpha: 1,
+          smoothness: 1,
+          probeRadius: 1.4,
+          ignoreHydrogens: true,
+          quality: 'custom',
+          resolution: 1,
+          includeParent: false
+        }
+      });
 
-      await this.plugin.state.data.updateTree(update);
-      this.plugin.canvas3d?.requestDraw();
     } catch (error) {
-      console.error('Error updating color theme:', error);
+      console.error('Error loading PDB:', error);
     }
   }
 

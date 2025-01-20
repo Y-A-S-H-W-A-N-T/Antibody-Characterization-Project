@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { MolstarWrapper } from '../lib/MostarWrapper'
+import { MolstarWrapper, Polymer } from '../lib/MostarWrapper'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
@@ -18,13 +18,14 @@ const colorThemes = [
   { value: 'electrostatic-potential', label: 'Electrostatic Potential' }
 ];
 
-const Polymer = ['ball-and-stick','cartoon','backbone','carbohydrate','ellipsoid','gaussian-surface','gaussian-volume','label','line','molecular-surface','orientation','point','putty','spacefill'];
+export type Polymer = 'ball-and-stick' | 'cartoon' | 'backbone' | 'carbohydrate' | 'ellipsoid' | 'gaussian-surface' | 'gaussian-volume' | 'label' | 'line' | 'molecular-surface' | 'orientation' | 'point' | 'putty' | 'spacefill'
 
 interface MolstarViewerProps {
   pdbId?: string
   localPdbPath?: string
   height?: string | number
   width?: string | number
+  polymer?: Polymer
 }
 
 export default function MolstarViewer({
@@ -32,6 +33,7 @@ export default function MolstarViewer({
   localPdbPath,
   height = 480,
   width = '100%',
+  polymer = 'molecular-surface'
 }: MolstarViewerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,7 @@ export default function MolstarViewer({
         if (mounted) {
           wrapperRef.current = wrapper;
           if (pdbId || localPdbPath) {
-            await wrapper.loadPdb(pdbId || localPdbPath!, !!localPdbPath, selectedPolymer);
+            await wrapper.loadPdb(pdbId || localPdbPath!, !!localPdbPath, polymer);
             await wrapper.updateColorTheme(selectedTheme);
           }
         }
@@ -99,11 +101,11 @@ export default function MolstarViewer({
     }
   };
 
-  const handlePolymerChange = async (polymer: string) => {
+  const handlePolymerChange = async (polymer: Polymer) => {
     setSelectedPolymer(polymer);
     if (wrapperRef.current && !loading) {
       try {
-        await wrapperRef.current.loadPdb(pdbId || localPdbPath!, !!localPdbPath, selectedPolymer);
+        await wrapperRef.current.loadPdb(pdbId || localPdbPath!, !!localPdbPath, polymer);
       } catch (error) {
         console.error('Failed to update color theme:', error);
         setError('Failed to update color theme');
@@ -162,7 +164,7 @@ export default function MolstarViewer({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-4 p-4 border-t bg-white">
+        {/* <div className="flex items-center gap-4 p-4 border-t bg-white">
           <Label htmlFor="color-theme" className="text-sm font-medium">
             Polymer Style
           </Label>
@@ -181,7 +183,7 @@ export default function MolstarViewer({
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
       </CardContent>
     </Card>
   );
