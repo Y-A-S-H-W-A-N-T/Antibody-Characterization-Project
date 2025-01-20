@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Eye, ChevronDown, ChevronUp } from "lucide-react"
 import Papa from "papaparse"
 import MolstarViewer from "./molstar"
-import type { MolstarWrapper, ResidueProperty, Polymer } from "../lib/MostarWrapper"
+import type { MolstarWrapper, Property, Polymer } from "../lib/MostarWrapper"
 import Header from "./Header"
 import Footer from "./Footer"
 
@@ -55,7 +55,7 @@ const PROPERTY_RANGES: Record<keyof Omit<AntibodyData, "Antibody">, { low: numbe
 }
 
 interface PropertySelectorProps {
-  onPropertyChange: (property: ResidueProperty) => void
+  onPropertyChange: (property: Property) => void
 }
 
 interface PolymerSelectorProps {
@@ -63,28 +63,25 @@ interface PolymerSelectorProps {
 }
 
 const PropertySelector: React.FC<PropertySelectorProps> = ({ onPropertyChange }) => {
-  const properties: { value: ResidueProperty; label: string }[] = [
-    { value: "hydrophobicity", label: "Hydrophobicity" },
-    { value: "sequence", label: "Sequence" },
-    { value: "secondary-structure", label: "Secondary Structure" },
-    { value: "chain-id", label: "Chain ID" },
-    { value: "b-factor", label: "B-Factor" },
+  const properties = [
+    'hydrophobicity',
+    'hydrophobicity'
   ]
 
   return (
     <Card className="mb-4">
       <CardHeader>
-        <CardTitle className="text-sm font-medium">Residue Property</CardTitle>
+        <CardTitle className="text-sm font-medium">Property</CardTitle>
       </CardHeader>
       <CardContent>
-        <Select onValueChange={(value: string) => onPropertyChange(value as ResidueProperty)}>
+        <Select onValueChange={(value: string) => onPropertyChange(value as Property)}>
           <SelectTrigger>
             <SelectValue placeholder="Select property" />
           </SelectTrigger>
           <SelectContent>
             {properties.map((prop) => (
-              <SelectItem key={prop.value} value={prop.value}>
-                {prop.label}
+              <SelectItem key={prop} value={prop}>
+                {prop}
               </SelectItem>
             ))}
           </SelectContent>
@@ -146,6 +143,7 @@ const AntibodyAnalysis = () => {
   const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null)
   const [molstarWrapper, setMolstarWrapper] = useState<MolstarWrapper | null>(null)
   const [polymerType, setPolymerType] = useState<Polymer>("molecular-surface")
+  const [propertyType, setPropertyType] = useState<Property>("hydrophobicity")
 
   // Get all columns excluding 'Antibody' for initial display
   const allColumns: (keyof AntibodyData)[] = ["Antibody", ...(Object.keys(PROPERTY_RANGES) as (keyof AntibodyData)[])]
@@ -212,10 +210,8 @@ const AntibodyAnalysis = () => {
     setSelectedAntibody(selectedAntibody === antibodyId ? null : antibodyId)
   }
 
-  const handlePropertyChange = (property: ResidueProperty) => {
-    if (molstarWrapper) {
-      molstarWrapper.setColorTheme(property)
-    }
+  const handlePropertyChange = (property: Property) => {
+    setPropertyType(property)
   }
 
   const handlePolymerChange = (polymer: Polymer) => {
@@ -312,8 +308,8 @@ const AntibodyAnalysis = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
-                <PropertySelector onPropertyChange={handlePropertyChange} />
-                <PolymerSelector onPolymerChange={handlePolymerChange} />
+              <PropertySelector onPropertyChange={handlePropertyChange} />
+              <PolymerSelector onPolymerChange={handlePolymerChange} />
                 <div className="h-[800px] overflow-y-auto">
                   <MolstarViewer
                     key={selectedAntibody}
@@ -321,6 +317,7 @@ const AntibodyAnalysis = () => {
                     height="100%"
                     onWrapperReady={setMolstarWrapper}
                     polymer={polymerType}
+                    property={propertyType}
                   />
                 </div>
               </CardContent>
