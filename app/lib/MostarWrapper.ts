@@ -1,19 +1,28 @@
-import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context';
-import { createPluginUI } from 'molstar/lib/mol-plugin-ui';
-import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18';
-import { DefaultPluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
-import { PluginConfig } from 'molstar/lib/mol-plugin/config';
-import { StateTransform } from 'molstar/lib/mol-state';
-import { Asset } from 'molstar/lib/mol-util/assets';
-import 'molstar/lib/mol-plugin-ui/skin/light.scss';
+import { PluginUIContext } from 'molstar/lib/mol-plugin-ui/context'
+import { createPluginUI } from 'molstar/lib/mol-plugin-ui'
+import { renderReact18 } from 'molstar/lib/mol-plugin-ui/react18'
+import { PluginUISpec } from 'molstar/lib/mol-plugin-ui/spec'
+import { PluginConfig } from 'molstar/lib/mol-plugin/config'
+import { 
+  StructureRepresentationPresetProvider,
+} from 'molstar/lib/mol-plugin-state/builder/structure/representation-preset'
+
+export type Property = 'atom-id' | 'carbohydrate-symbol' | 'cartoon' | 'chain-id' | 'element-index' | 'element-symbol' | 'entity-id' | 'entity-source' | 'external-volume' | 'formal-charge'
+ | 'hydrophobicity' | 'illustrative'| 'model-index' | 'molecule-type' | 'occupancy' | 'operator-hkl' | 'operator-name' | 'partial-charge' | 'polymer-id' | 'polymer-index' | 'residue-name' 
+ | 'secondary-structure' | 'sequence-id' | 'shape-group' | 'structure-index' | 'trajectory-index' | 'uncertainty' | 'uniform' | 'unit-index' | 'volume-segment' | 'volume-value';
+
+
+export type Polymer = 'ball-and-stick' | 'cartoon' | 'backbone' | 'carbohydrate' | 'ellipsoid' | 'gaussian-surface' | 'gaussian-volume' | 'label' | 'line' | 'molecular-surface' | 'orientation' | 'point' | 'putty' | 'spacefill'
+
 
 export class MolstarWrapper {
-  private resolveInit!: () => void;
+  private resolveInit!: () => void
   initialized: Promise<boolean>;
   private initCalled = false;
   plugin!: PluginUIContext;
   private target: HTMLDivElement | null = null;
   private disposed = false;
+  private currentStructure: any = null;
 
   constructor() {
     this.initialized = new Promise<boolean>(res => {
@@ -22,7 +31,9 @@ export class MolstarWrapper {
   }
 
   setTarget(element: HTMLDivElement) {
-    if (this.disposed) throw new Error('Cannot set target on disposed wrapper');
+    if (this.disposed) {
+      throw new Error('Cannot set target on disposed wrapper');
+    }
     this.target = element;
   }
 
@@ -31,36 +42,25 @@ export class MolstarWrapper {
     this.initCalled = true;
 
     try {
-      const spec = {
-        ...DefaultPluginUISpec(),
-        layout: {
-          initial: {
-            isExpanded: false,
-            showControls: false,
-            regionState: {
-              left: 'hidden',
-              right: 'hidden',
-              bottom: 'hidden',
-              top: 'hidden'
-            }
-          }
-        },
-        components: {
-          remoteState: 'none',
-          controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' }
-        },
+      const spec: PluginUISpec = {
         config: [
-          [PluginConfig.VolumeStreaming.Enabled, false],
+          [PluginConfig.VolumeStreaming.Enabled, true],
           [PluginConfig.Viewport.ShowAnimation, true],
           [PluginConfig.Viewport.ShowSelectionMode, true],
           [PluginConfig.Viewport.ShowControls, true],
-          [PluginConfig.Viewport.ShowAnimation, false],
-        ]
+        ],
+        layout: {
+          initial: {
+            isExpanded: false,
+            showControls: true,
+          }
+        },
+        behaviors: []
       };
 
       this.plugin = await createPluginUI({
         target: this.target,
-        
+        spec,
         render: renderReact18
       });
 
@@ -73,84 +73,36 @@ export class MolstarWrapper {
     }
   }
 
-  async loadPdb(source: string, isLocal: boolean = false, polymer: string) {
-    if (!this.plugin || this.disposed) return;
+  async loadPdb(source: string, isLocal: boolean = false, polymer: Polymer, property: Property)
+{
+  if (!this.plugin || this.disposed) return;
 
-    try {
-      await this.plugin.clear();
+  try {
+    const url = isLocal ? source : `https://files.rcsb.org/download/${source}.pdb`
+    const data = await this.plugin.builders.data.download({ url }, { state: { isGhost: true } })
+    const trajectory = await this.plugin.builders.structure.parseTrajectory(data, "pdb")
+    const model = await this.plugin.builders.structure.createModel(trajectory)
+    const structure = await this.plugin.builders.structure.createStructure(model)
 
-      const url = isLocal ? source : `https://files.rcsb.org/download/${source}.pdb`;
-      
-      // Create a data object with proper asset handling
-      const data = await this.plugin.builders.data.download({ 
-        url: Asset.Url(url),
-        isBinary: false,
-        label: 'PDB File'
-      });
+    this.currentStructure = structure
 
-      // Parse the data into a trajectory
-      const trajectory = await this.plugin.builders.structure.parseTrajectory(data, 'pdb');
-      
-      // Create a model from the trajectory
-      const model = await this.plugin.builders.structure.createModel(trajectory);
-      
-      // Create a structure from the model
-      const structure = await this.plugin.builders.structure.createStructure(model);
-
-      // Add cartoon representation
-      await this.plugin.builders.structure.representation.addRepresentation(structure, {
-        type: polymer,
-        color: 'chain-id',
-        size: 'uniform',
-      });
-
-      // Add ball-and-stick representation
-      await this.plugin.builders.structure.representation.addRepresentation(structure, {
-        type: polymer,
-        color: 'element-symbol',
-        size: 'uniform'
-      });
-
-      // Reset camera and update viewport
-      // await this.plugin.canvas3d?;
-      // this.plugin.canvas3d?.setProps({
-      //   postprocessing: {
-      //     occlusion: { name: 'on', params: { samples: 32, radius: 6, bias: 1.4 } },
-      //     outline: { name: 'on', params: { scale: 1, threshold: 0.33 } }
-      //   }
-      // });
-      
-      // Ensure proper sizing
-      this.plugin.canvas3d?.requestResize();
-      
-      return structure;
-    } catch (error) {
-      console.error('Error loading PDB:', error);
-      throw error;
-    }
+    await this.plugin.builders.structure.representation.addRepresentation(structure, {
+      type: polymer,
+      typeParams: {
+        alpha: 1,
+        smoothness: 1,
+        probeRadius: 1.4,
+        ignoreHydrogens: true,
+        quality: "custom",
+        resolution: 1,
+        includeParent: false
+      },
+      color: property
+    })
+  } catch (error) {
+    console.error("Error loading PDB:", error)
   }
-
-  async updateColorTheme(theme: string) {
-    if (!this.plugin || this.disposed) return;
-
-    try {
-      const update = this.plugin.state.data.build();
-      const representations = this.plugin.managers.structure.hierarchy.current.structures[0]?.components;
-      
-      if (!representations) return;
-
-      for (const repr of representations) {
-        update.to(repr.cell.transform.ref).update({
-          colorTheme: { name: theme }
-        });
-      }
-
-      await this.plugin.state.data.updateTree(update);
-      this.plugin.canvas3d?.requestDraw();
-    } catch (error) {
-      console.error('Error updating color theme:', error);
-    }
-  }
+}
 
   dispose() {
     if (this.disposed) return;
