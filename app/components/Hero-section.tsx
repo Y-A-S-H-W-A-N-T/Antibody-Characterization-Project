@@ -116,14 +116,14 @@ const HeroSection: React.FC = () => {
           {/* Navigation Buttons */}
           <Button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black dark:bg-gray-800 shadow-lg hover:bg-gray-500 dark:hover:bg-gray-700"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black dark:bg-gray-800 shadow-lg hover:bg-gray-500 dark:hover:bg-gray-700 dark:text-white"
           >
             <ChevronLeft className="w-6 h-6" />
           </Button>
 
           <Button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black dark:bg-gray-800 shadow-lg hover:bg-gray-500 dark:hover:bg-gray-700"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black dark:bg-gray-800 shadow-lg hover:bg-gray-500 dark:hover:bg-gray-700 dark:text-white"
           >
             <ChevronRight className="w-6 h-6" />
           </Button>

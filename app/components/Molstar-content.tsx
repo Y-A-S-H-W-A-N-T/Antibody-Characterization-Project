@@ -42,21 +42,19 @@ const MolStarView = () => {
         <div className="p-8">
           <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">
             What is MolStar View
-            <div className="w-28 h-1 bg-blue-800 mx-auto mt-4"></div>
+            <div className="w-20 h-1 bg-blue-800 mx-auto mt-4 "></div>
           </h1>
           {sections.map((section, index) => (
             <div key={index} className="mb-12 last:mb-0">
-              <h2 className="text-2xl font-semibold text-blue-800 dark:text-white mb-4 flex items-center">
-                <span className="w-8 h-8 rounded-full bg-purple-100 dark:bg-blue-900  flex items-center justify-center mr-3 text-blue-800 dark:text-white -bold">
-                  {index + 1}
-                </span>
+              <h2 className="text-2xl text-left leading-relaxed  pl-11 dark:text-white mb-4 flex items-center">
+            
                 {section.title}
               </h2>
               <p className="text-gray-700 text-left leading-relaxed mb-6 pl-11 dark:text-white">
                 {section.content}
               </p>
               {index !== sections.length - 1 && (
-                <div className="w-1/2 h-px bg-purple-200 mx-auto my-8 dark:bg-blue-800"></div>
+                <div className="w-full h-px bg-purple-200 mx-auto my-8 dark:bg-gray-600"></div>
               )}
             </div>
           ))}

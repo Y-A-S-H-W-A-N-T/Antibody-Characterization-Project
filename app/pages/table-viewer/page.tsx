@@ -10,7 +10,7 @@ import MolstarViewer from "../../components/molstar"
 import type { MolstarWrapper, Property, Polymer } from "../../lib/MostarWrapper"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
-import MolstarContent from "@/app/components/Molstar-content"
+import MolstarInfo from "@/app/components/Molstar-info"
 
 interface AntibodyData {
   Antibody: string
@@ -252,12 +252,13 @@ const AntibodyAnalysis = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="flex flex-1 w-full gap-4 p-4">
+      <MolstarInfo/>
+
+      <div className="flex flex-1 w-full gap-4 p-12">
         <div className={`flex-1 ${selectedAntibody ? "w-2/3" : "w-full"}`}>
-            {/* <MolstarContent/> */}
-          <Card className="bg-white  bg-[size:40px_40px]">
+          <Card className="bg-white    bg-[size:40px_40px]">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold bg-blue-950 rounded-xl p-5 text-white  text-center">Antibody Properties Analysis</CardTitle>
+              <CardTitle className="text-2xl font-bold bg-blue-950 rounded-xl p-5 m-2 text-white  text-center">Antibody Properties Analysis</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -274,7 +275,7 @@ const AntibodyAnalysis = () => {
                         {allColumns.map((column) => (
                           <TableHead
                             key={column}
-                            className={`text-gray-700 font-semibold cursor-pointer hover:bg-gray-50 ${
+                            className={`text-gray-700 font-semibold cursor-pointer hover:bg-gray-50  ${
                               column === "Antibody" ? "sticky left-0 bg-white" : ""
                             }`}
                             onClick={() => handleSort(column)}
@@ -290,12 +291,12 @@ const AntibodyAnalysis = () => {
                             </div>
                           </TableHead>
                         ))}
-                        <TableHead className="sticky right-0 bg-white">Actions</TableHead>
+                        <TableHead className="sticky right-0 bg-white text-black">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {sortedData.map((antibody, index) => (
-                        <TableRow key={index} className="hover:bg-gray-50">
+                        <TableRow key={index} className="hover:bg-gray-50 ">
                           {allColumns.map((column) => (
                             <TableCell
                               key={column}
@@ -331,15 +332,15 @@ const AntibodyAnalysis = () => {
         {selectedAntibody && (
           <div className="w-[600px]">
             <Card>
-              <CardHeader className="border-b">
+              <CardHeader className="border-b p-4 m-2 bg-blue-950 rounded-xl text-white">
                 <CardTitle className="flex justify-between items-center">
                   <span>{selectedAntibody} Structure</span>
-                  <Button variant="outline" size="sm" onClick={() => setSelectedAntibody(null)}>
+                  <Button className="text-black dark:text-white" variant="outline" size="sm" onClick={() => setSelectedAntibody(null)}>
                     Close
                   </Button>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4">
+              <CardContent className="p-6">
               <PropertySelector onPropertyChange={handlePropertyChange} />
               <PolymerSelector onPolymerChange={handlePolymerChange} />
                 <div className="h-[800px] overflow-y-auto">
@@ -355,6 +356,7 @@ const AntibodyAnalysis = () => {
               </CardContent>
             </Card>
           </div>
+
         )}
       </div>
       <Footer />
