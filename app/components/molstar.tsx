@@ -69,7 +69,7 @@ export default function MolstarViewer({
       }
       initializingRef.current = false;
     };
-  }, [onWrapperReady]);
+  }, [onWrapperReady, polymer]);
 
   useEffect(() => {
     const loadStructure = async () => {

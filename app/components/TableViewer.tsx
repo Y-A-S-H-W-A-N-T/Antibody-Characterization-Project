@@ -140,7 +140,7 @@ const AntibodyAnalysis = () => {
   }>({ key: null, direction: 'asc' });
   const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null);
   const [molstarWrapper, setMolstarWrapper] = useState<MolstarWrapper | null>(null);
-  const [polymerType,setPolymerTpe] = useState<Polymer | null>('molecular-surface')
+  const [polymerType,setPolymerType] = useState<Polymer>('molecular-surface')
 
 
   // Get all columns excluding 'Antibody' for initial display
@@ -215,7 +215,7 @@ const AntibodyAnalysis = () => {
   };
 
   const handlePolymerChange = (polymer: Polymer) => {
-    
+    setPolymerType(polymer)
   };
 
 
@@ -320,7 +320,7 @@ const AntibodyAnalysis = () => {
                   localPdbPath={`/pdb/${selectedAntibody}.pdb`}
                   height="100%"
                   onWrapperReady={setMolstarWrapper}
-                  polymer='label'
+                  polymer={polymerType}
                 />
               </div>
             </CardContent>
