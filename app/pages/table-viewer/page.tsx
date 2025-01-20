@@ -10,6 +10,7 @@ import MolstarViewer from "../../components/molstar"
 import type { MolstarWrapper, Property, Polymer } from "../../lib/MostarWrapper"
 import Header from "../../components/Header"
 import Footer from "../../components/Footer"
+import MolstarContent from "@/app/components/Molstar-content"
 
 interface AntibodyData {
   Antibody: string
@@ -253,9 +254,10 @@ const AntibodyAnalysis = () => {
       <Header />
       <div className="flex flex-1 w-full gap-4 p-4">
         <div className={`flex-1 ${selectedAntibody ? "w-2/3" : "w-full"}`}>
-          <Card className="bg-white bg-[radial-gradient(circle_at_1px_1px,#e5e7eb_1px,transparent_0)] bg-[size:40px_40px]">
+            {/* <MolstarContent/> */}
+          <Card className="bg-white  bg-[size:40px_40px]">
             <CardHeader>
-              <CardTitle className="text-2xl font-bold text-gray-800">Antibody Properties Analysis</CardTitle>
+              <CardTitle className="text-2xl font-bold bg-blue-950 rounded-xl p-5 text-white  text-center">Antibody Properties Analysis</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (

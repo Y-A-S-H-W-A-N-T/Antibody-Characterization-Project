@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ContentSection from "./content-section"; // Import ContentSection
+import MolstarContent from "./Molstar-content";
 
 const HeroSection: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -22,7 +23,7 @@ const HeroSection: React.FC = () => {
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden px-6 md:px-12 text-center">
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-500" />
 
       {/* Animated Antibody Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -77,11 +78,11 @@ const HeroSection: React.FC = () => {
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.8 }}
-  className="text-5xl md:text-7xl mt-20 font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500 mb-6"
+  className="text-5xl md:text-7xl mt-20 font-bold text-black p-3 font-inter dark:text-white"
 >
-  Antibody
-  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-500"> Characterization</span>
+  Antibody Characterization
 </motion.h1>
+
 
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
@@ -99,7 +100,7 @@ const HeroSection: React.FC = () => {
           className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
         >
           <Link href="/pages/table-viewer">
-            <Button className="px-8 py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transform transition-all hover:scale-105 hover:shadow-lg">
+            <Button className="px-8 py-4 text-lg font-semibold bg-black hover:bg-gray-700 text-white rounded-lg transform transition-all hover:scale-105 hover:shadow-lg">
               Explore Dashboard
             </Button>
           </Link>
@@ -159,6 +160,7 @@ const HeroSection: React.FC = () => {
         
         {/* Add Content Section Below Hero Section */}
         <ContentSection />
+        <MolstarContent />
 
         {/* Additional Content as Normal Text */}
         <div className="mt-8 text-gray-700 dark:text-gray-300 text-left space-y-6 leading-relaxed">
