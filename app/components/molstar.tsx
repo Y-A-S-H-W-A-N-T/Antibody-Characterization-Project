@@ -8,7 +8,9 @@ interface MolstarViewerProps {
   localPdbPath?: string
   height?: string | number
   width?: string | number
-  onWrapperReady?: (wrapper: MolstarWrapper) => void
+  onWrapperReady?: (wrapper: MolstarWrapper) => void,
+  polymer: any,
+  property: any
 }
 
 export default function MolstarViewer({
@@ -17,6 +19,8 @@ export default function MolstarViewer({
   height = 480,
   width = '100%',
   onWrapperReady,
+  polymer,
+  property
 }: MolstarViewerProps) {
   const [loading, setLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,9 +46,9 @@ export default function MolstarViewer({
             onWrapperReady(wrapper);
           }
           if (pdbId) {
-            await wrapper.loadPdb(pdbId, false);
+            await wrapper.loadPdb(pdbId, false, polymer, property);
           } else if (localPdbPath) {
-            await wrapper.loadPdb(localPdbPath, true);
+            await wrapper.loadPdb(localPdbPath, true, polymer, property);
           }
         }
       } catch (error) {
@@ -67,7 +71,7 @@ export default function MolstarViewer({
       }
       initializingRef.current = false;
     };
-  }, [onWrapperReady]);
+  }, [onWrapperReady, polymer, property]);
 
   useEffect(() => {
     const loadStructure = async () => {
@@ -75,7 +79,7 @@ export default function MolstarViewer({
         if (pdbId || localPdbPath) {
           setLoading(true);
           try {
-            await wrapperRef.current.loadPdb(pdbId || localPdbPath || '', !!localPdbPath);
+            await wrapperRef.current.loadPdb(pdbId || localPdbPath || '', !!localPdbPath, polymer, property);
           } catch (error) {
             console.error('Error loading structure:', error);
           } finally {
@@ -86,7 +90,8 @@ export default function MolstarViewer({
     };
 
     loadStructure();
-  }, [pdbId, localPdbPath]);
+  // }, [pdbId, localPdbPath]);
+  }, [pdbId, localPdbPath, polymer, property]);
 
   return (
     <div style={{ position: 'relative', width, height }}>
