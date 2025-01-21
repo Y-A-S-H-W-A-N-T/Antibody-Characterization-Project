@@ -46,29 +46,30 @@ const Header = () => {
             transition={{ delay: 0.3 }}
           >
             <Link href="/pages/table-viewer">
-              <Button
-                variant="ghost"
-                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
-              >
-                Dashboard Analysis
-              </Button>
-            </Link>
-            <Link href="/pages/documentation">
-              <Button
-                variant="ghost"
-                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
-              >
-                Documentation
-              </Button>
-            </Link>
-            <Button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              variant="ghost"
-              size="icon"
-              className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
-            >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
+  <Button
+    variant="ghost"
+    className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
+  >
+    Dashboard Analysis
+  </Button>
+</Link>
+<Link href="/pages/documentation">
+  <Button
+    variant="ghost"
+    className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
+  >
+    Documentation
+  </Button>
+</Link>
+<Button
+  onClick={() => setIsDarkMode(!isDarkMode)}
+  variant="ghost"
+  size="icon"
+  className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
+>
+  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+</Button>
+
             <a
               href="https://github.com/Y-A-S-H-W-A-N-T/Antibody-Characterization-Project"
               target="_blank"

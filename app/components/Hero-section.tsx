@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ContentSection from "./content-section"; // Import ContentSection
 import MolstarContent from "./Molstar-content";
+import Image from "next/image";
 
 const HeroSection: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -74,24 +75,46 @@ const HeroSection: React.FC = () => {
 
       {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto">
-      <motion.h1 
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.8 }}
-  className="text-5xl md:text-7xl mt-20 font-bold text-black p-3 font-inter dark:text-white"
->
-  Antibody Characterization
-</motion.h1>
+      <div className="">
+  <div className="text-center"> {/* Add text-center for horizontal centering */}
+    <motion.h1
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      className="text-5xl md:text-7xl mt-20 font-bold text-black p-3 font-inter dark:text-white"
+    >
+      Antibody Characterization
+    </motion.h1>
+    <motion.h1
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    className="flex justify-center"> {/* Flexbox for centering */}
+      <Image
+        src={require('../components/molstar.gif')}
+        alt={'GIF image'}
+        width={100}
+        height={200}
+        unoptimized={true}
+        style={{
+          objectFit: 'contain',
+          width: '40%',
+          height: 'auto',
+        }}
+        priority={true}
+      />
+    </motion.h1>
+    <motion.p
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.2 }}
+      className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8"
+    >
+      Antibodies are Y-shaped proteins that help identify and neutralize foreign invaders like bacteria and viruses. Explore their essential properties including hydrophobicity, polarity, and chain values.
+    </motion.p>
+  </div>
+</div>
 
-
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8"
-        >
-          Antibodies are Y-shaped proteins that help identify and neutralize foreign invaders like bacteria and viruses. Explore their essential properties including hydrophobicity, polarity, and chain values.
-        </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
