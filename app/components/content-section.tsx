@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 const ContentSection = () => {
   const items = [
@@ -98,17 +98,16 @@ const ContentSection = () => {
         "The extinction coefficient measures how much light a substance absorbs at a specific wavelength, important in spectrophotometry.",
       link: "Search Extinction Coefficient",
     },
-  ]
+  ];
 
   return (
     <div className="relative w-full min-h-screen  rounded-3xl">
       <div className="max-w-7xl mx-auto px-6 py-12">
-      <div className="text-center mb-12">
-  <h2 className="text-5xl text-black dark:text-white font-extrabold mb-4 p-10 rounded-3xl bg-blue-200 dark:bg-[#05042a]  ">
-    Explore Biochemical & Biophysical Mysteries
-  </h2>
-</div>
-
+        <div className="text-center mb-12">
+          <h2 className="text-5xl text-black dark:text-white font-extrabold mb-4 p-10 rounded-3xl bg-blue-200 dark:bg-[#05042a]  ">
+            Explore Biochemical & Biophysical Mysteries
+          </h2>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {items.map((item, index) => (
@@ -118,8 +117,12 @@ const ContentSection = () => {
               style={{ minWidth: "250px", minHeight: "250px" }}
             >
               <div>
-                <h3 className="text-left text-2xl font-bold text-gray-900 dark:text-white mb-3">{item.title}</h3>
-                <p className="text-left text-gray-700 dark:text-gray-300 mb-4 text-sm">{item.description}</p>
+                <h3 className="text-left text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  {item.title}
+                </h3>
+                <p className="text-left text-gray-700 dark:text-gray-300 mb-4 text-sm">
+                  {item.description}
+                </p>
               </div>
               <a
                 href="#"
@@ -132,8 +135,7 @@ const ContentSection = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ContentSection
-
+export default ContentSection;

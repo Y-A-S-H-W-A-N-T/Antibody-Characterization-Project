@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dna, Microscope, Settings2 } from 'lucide-react';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dna, Microscope, Settings2 } from "lucide-react";
 
 const MolstarInfo = () => {
   return (
@@ -8,10 +8,11 @@ const MolstarInfo = () => {
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">            Advanced visualization tool for molecular structures
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            {" "}
+            Advanced visualization tool for molecular structures
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          </p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto"></p>
         </div>
 
         {/* Main Features */}
@@ -26,9 +27,10 @@ const MolstarInfo = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
-                Load molecular files in various formats including PDB, CIF, and SMILES through direct 
-                uploads or structure-specific IDs. Our versatile platform supports comprehensive 
-                analysis of proteins, DNA, RNA, and small molecules.
+                Load molecular files in various formats including PDB, CIF, and
+                SMILES through direct uploads or structure-specific IDs. Our
+                versatile platform supports comprehensive analysis of proteins,
+                DNA, RNA, and small molecules.
               </p>
             </CardContent>
           </Card>
@@ -43,9 +45,10 @@ const MolstarInfo = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
-                Choose from multiple visualization styles including cartoon, ball-and-stick, 
-                space-filling, and surface representations. Each style is optimized for specific 
-                analytical needs and scientific accuracy.
+                Choose from multiple visualization styles including cartoon,
+                ball-and-stick, space-filling, and surface representations. Each
+                style is optimized for specific analytical needs and scientific
+                accuracy.
               </p>
             </CardContent>
           </Card>
@@ -94,23 +97,28 @@ const MolstarInfo = () => {
           <CardContent>
             <div className="prose max-w-none text-gray-600">
               <p className="mb-4">
-                MolStar View serves as a versatile platform for visualizing and understanding complex 
-                biomolecular systems. The tools comprehensive features make it particularly valuable 
-                in:
+                MolStar View serves as a versatile platform for visualizing and
+                understanding complex biomolecular systems. The tools
+                comprehensive features make it particularly valuable in:
               </p>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-gray-50 p-4 rounded-lg dark:bg-slate-900 dark:text-gray-500">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-2 dark:text-white">Drug Discovery</h4>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2 dark:text-white">
+                    Drug Discovery
+                  </h4>
                   <p>
-                    Analyze molecular interactions and binding sites with precision, supporting 
-                    structure-based drug design and optimization.
+                    Analyze molecular interactions and binding sites with
+                    precision, supporting structure-based drug design and
+                    optimization.
                   </p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg dark:bg-slate-900 dark:text-gray-500">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-2 dark:text-white">Structural Biology</h4>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2 dark:text-white">
+                    Structural Biology
+                  </h4>
                   <p>
-                    Study protein structures, conformational changes, and molecular dynamics with 
-                    advanced visualization capabilities.
+                    Study protein structures, conformational changes, and
+                    molecular dynamics with advanced visualization capabilities.
                   </p>
                 </div>
               </div>

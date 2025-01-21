@@ -1,43 +1,70 @@
-"use client"
-import type React from "react"
+"use client";
+import type React from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { useState, useEffect } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Eye } from "lucide-react"
-import Papa from "papaparse"
-import MolstarViewer from "../../components/molstar"
-import type { MolstarWrapper, Property, Polymer } from "../../lib/MostarWrapper"
-import Header from "../../components/Header"
-import Footer from "../../components/Footer"
-import MolstarInfo from "@/app/components/Molstar-info"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Eye } from "lucide-react";
+import Papa from "papaparse";
+import MolstarViewer from "../../components/molstar";
+import type {
+  MolstarWrapper,
+  Property,
+  Polymer,
+} from "../../lib/MostarWrapper";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+import MolstarInfo from "@/app/components/Molstar-info";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
+// Define the structure of antibody data including all biophysical properties
 interface AntibodyData {
-  Antibody: string
-  "Isoelectric point": number
-  "Fv net charge": number
-  Hydrophobicity: number
-  "Extinction coeff": number
-  BSA: number
-  "Hydrodynamic radius": number
-  "Helix ratio": number
-  "Sheet ratio": number
-  PSH: number
-  PPC: number
-  PNC: number
-  PPA: number
-  "Solvation energy": number
-  "Binding energy": number
-  "Dipole moment": number
-  "Hydrophobic moment": number
-  Amphipathicity: number
-  "SAP score": number
+  Antibody: string;
+  "Isoelectric point": number;
+  "Fv net charge": number;
+  Hydrophobicity: number;
+  "Extinction coeff": number;
+  BSA: number;
+  "Hydrodynamic radius": number;
+  "Helix ratio": number;
+  "Sheet ratio": number;
+  PSH: number;
+  PPC: number;
+  PNC: number;
+  PPA: number;
+  "Solvation energy": number;
+  "Binding energy": number;
+  "Dipole moment": number;
+  "Hydrophobic moment": number;
+  Amphipathicity: number;
+  "SAP score": number;
 }
 
-const PROPERTY_RANGES: Record<keyof Omit<AntibodyData, "Antibody">, { low: number; high: number }> = {
+// Define acceptable ranges for each property. Values outside these ranges will be highlighted
+const PROPERTY_RANGES: Record<
+  keyof Omit<AntibodyData, "Antibody">,
+  { low: number; high: number }
+> = {
   "Isoelectric point": { low: 6, high: 8 },
   Hydrophobicity: { low: -0.3, high: -0.2 },
   "SAP score": { low: 80, high: 100 },
@@ -56,17 +83,21 @@ const PROPERTY_RANGES: Record<keyof Omit<AntibodyData, "Antibody">, { low: numbe
   "Hydrophobic moment": { low: 60000, high: 75000 },
   Amphipathicity: { low: 0.8, high: 1.2 },
   "Extinction coeff": { low: 45000, high: 55000 },
-}
+};
 
+// Props interfaces for selector components
 interface PropertySelectorProps {
-  onPropertyChange: (property: Property) => void
+  onPropertyChange: (property: Property) => void;
 }
 
 interface PolymerSelectorProps {
-  onPolymerChange: (polymer: Polymer) => void
+  onPolymerChange: (polymer: Polymer) => void;
 }
+// Component for selecting visualization properties in the 3D viewer
 
-const PropertySelector: React.FC<PropertySelectorProps> = ({ onPropertyChange }) => {
+const PropertySelector: React.FC<PropertySelectorProps> = ({
+  onPropertyChange,
+}) => {
   const properties = [
     "atom-id",
     "carbohydrate-symbol",
@@ -99,7 +130,7 @@ const PropertySelector: React.FC<PropertySelectorProps> = ({ onPropertyChange })
     "unit-index",
     "volume-segment",
     "volume-value",
-  ]
+  ];
 
   return (
     <Card className="mb-4">
@@ -107,7 +138,9 @@ const PropertySelector: React.FC<PropertySelectorProps> = ({ onPropertyChange })
         <CardTitle className="text-sm font-medium">Property</CardTitle>
       </CardHeader>
       <CardContent>
-        <Select onValueChange={(value: string) => onPropertyChange(value as Property)}>
+        <Select
+          onValueChange={(value: string) => onPropertyChange(value as Property)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select property" />
           </SelectTrigger>
@@ -121,10 +154,13 @@ const PropertySelector: React.FC<PropertySelectorProps> = ({ onPropertyChange })
         </Select>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
+// Component for selecting polymer representation type in the 3D viewer
 
-const PolymerSelector: React.FC<PolymerSelectorProps> = ({ onPolymerChange }) => {
+const PolymerSelector: React.FC<PolymerSelectorProps> = ({
+  onPolymerChange,
+}) => {
   const Polymer = [
     "ball-and-stick",
     "cartoon",
@@ -140,7 +176,7 @@ const PolymerSelector: React.FC<PolymerSelectorProps> = ({ onPolymerChange }) =>
     "point",
     "putty",
     "spacefill",
-  ]
+  ];
 
   return (
     <Card className="mb-4">
@@ -148,7 +184,9 @@ const PolymerSelector: React.FC<PolymerSelectorProps> = ({ onPolymerChange }) =>
         <CardTitle className="text-sm font-medium">Polymer</CardTitle>
       </CardHeader>
       <CardContent>
-        <Select onValueChange={(value: string) => onPolymerChange(value as Polymer)}>
+        <Select
+          onValueChange={(value: string) => onPolymerChange(value as Polymer)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select polymer" />
           </SelectTrigger>
@@ -162,75 +200,91 @@ const PolymerSelector: React.FC<PolymerSelectorProps> = ({ onPolymerChange }) =>
         </Select>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
+// Main component for antibody analysis and visualization
 
 const AntibodyAnalysis = () => {
-  const [data, setData] = useState<AntibodyData[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null)
-  const [molstarWrapper, setMolstarWrapper] = useState<MolstarWrapper | null>(null)
-  const [polymerType, setPolymerType] = useState<Polymer>("molecular-surface")
-  const [propertyType, setPropertyType] = useState<Property>("formal-charge")
+  const [data, setData] = useState<AntibodyData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedAntibody, setSelectedAntibody] = useState<string | null>(null);
+  const [molstarWrapper, setMolstarWrapper] = useState<MolstarWrapper | null>(
+    null
+  );
+  const [polymerType, setPolymerType] = useState<Polymer>("molecular-surface");
+  const [propertyType, setPropertyType] = useState<Property>("formal-charge");
 
   // Get all columns excluding 'Antibody' for initial display
-  const allColumns: (keyof AntibodyData)[] = ["Antibody", ...(Object.keys(PROPERTY_RANGES) as (keyof AntibodyData)[])]
+  const allColumns: (keyof AntibodyData)[] = [
+    "Antibody",
+    ...(Object.keys(PROPERTY_RANGES) as (keyof AntibodyData)[]),
+  ];
+
+  // Fetch and parse CSV data on component mount
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/agan_prop.csv")
-        const csvText = await response.text()
+        const response = await fetch("/agan_prop.csv");
+        const csvText = await response.text();
 
         Papa.parse<AntibodyData>(csvText, {
           header: true,
           dynamicTyping: true,
           complete: (results) => {
             // Remove the last row (null data)
-            const filteredData = results.data.filter((row) => row.Antibody !== null)
-            setData(filteredData)
-            setLoading(false)
+            const filteredData = results.data.filter(
+              (row) => row.Antibody !== null
+            );
+            setData(filteredData);
+            setLoading(false);
           },
           error: (error: { message: React.SetStateAction<string | null> }) => {
-            setError(error.message)
-            setLoading(false)
+            setError(error.message);
+            setLoading(false);
           },
-        })
+        });
       } catch (error) {
-        setError("Failed to load antibody data")
-        setLoading(false)
+        setError("Failed to load antibody data");
+        setLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  const getCellColor = (property: keyof AntibodyData, value: string | number) => {
-    if (property === "Antibody" || typeof value !== "number") return ""
+  // Determine cell background color based on property value ranges
+  const getCellColor = (
+    property: keyof AntibodyData,
+    value: string | number
+  ) => {
+    if (property === "Antibody" || typeof value !== "number") return "";
 
-    const range = PROPERTY_RANGES[property as keyof typeof PROPERTY_RANGES]
-    if (!range) return ""
+    const range = PROPERTY_RANGES[property as keyof typeof PROPERTY_RANGES];
+    if (!range) return "";
 
-    if (value < range.low) return "bg-red-100 dark:bg-red-100 text-red-800 dark:text-black"
-    if (value > range.high) return "bg-green-100 dark:bg-green-100 text-green-800 dark:text-black"
-    return "bg-amber-100 dark:bg-amber-100 text-black dark:text-black"
-  }
+    if (value < range.low)
+      return "bg-red-100 dark:bg-red-100 text-red-800 dark:text-black";
+    if (value > range.high)
+      return "bg-green-100 dark:bg-green-100 text-green-800 dark:text-black";
+    return "bg-amber-100 dark:bg-amber-100 text-black dark:text-black";
+  };
 
-  const sortedData = data
+  const sortedData = data;
 
   const handleViewStructure = (antibodyId: string) => {
-    setSelectedAntibody(selectedAntibody === antibodyId ? null : antibodyId)
-  }
+    setSelectedAntibody(selectedAntibody === antibodyId ? null : antibodyId);
+  };
 
   const handlePropertyChange = (property: Property) => {
-    setPropertyType(property)
-    console.log(property)
-  }
+    setPropertyType(property);
+    console.log(property);
+  };
 
   const handlePolymerChange = (polymer: Polymer) => {
-    setPolymerType(polymer)
-  }
+    setPolymerType(polymer);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -241,7 +295,9 @@ const AntibodyAnalysis = () => {
         <div className={`flex-1 ${selectedAntibody ? "lg:w-2/3" : "w-full"}`}>
           <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
             <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-950 text-white p-6">
-              <CardTitle className="text-2xl md:text-3xl font-bold text-center">Antibody Properties Analysis</CardTitle>
+              <CardTitle className="text-2xl md:text-3xl font-bold text-center">
+                Antibody Properties Analysis
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4 md:p-6">
               {loading ? (
@@ -249,7 +305,9 @@ const AntibodyAnalysis = () => {
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
                 </div>
               ) : error ? (
-                <div className="text-red-500 dark:text-red-400 text-center">{error}</div>
+                <div className="text-red-500 dark:text-red-400 text-center">
+                  {error}
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
@@ -259,7 +317,9 @@ const AntibodyAnalysis = () => {
                           <TableHead
                             key={column}
                             className={`text-gray-700 dark:text-gray-200 font-semibold ${
-                              column === "Antibody" ? "sticky left-0 bg-gray-100 dark:bg-gray-950 z-10" : "dark:bg-gray-950"
+                              column === "Antibody"
+                                ? "sticky left-0 bg-gray-100 dark:bg-gray-950 z-10"
+                                : "dark:bg-gray-950"
                             }`}
                           >
                             <div className="flex items-center gap-2">
@@ -268,18 +328,21 @@ const AntibodyAnalysis = () => {
                                 <TooltipProvider>
                                   <Tooltip>
                                     <TooltipTrigger>
-                                    <div className="flex items-center gap-1">
-      <AiOutlineEye className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-    </div>
+                                      <div className="flex items-center gap-1">
+                                        <AiOutlineEye className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                                      </div>
                                     </TooltipTrigger>
                                     <TooltipContent>
                                       <div className="flex flex-col gap-1">
                                         <p className="font-medium">
-                                          Range: {PROPERTY_RANGES[column].low} - {PROPERTY_RANGES[column].high}
+                                          Range: {PROPERTY_RANGES[column].low} -{" "}
+                                          {PROPERTY_RANGES[column].high}
                                         </p>
                                         <div className="flex items-center gap-2">
                                           <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                          <span>Below {PROPERTY_RANGES[column].low}</span>
+                                          <span>
+                                            Below {PROPERTY_RANGES[column].low}
+                                          </span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                           <span className="w-2 h-2 rounded-full bg-amber-500"></span>
@@ -287,7 +350,9 @@ const AntibodyAnalysis = () => {
                                         </div>
                                         <div className="flex items-center gap-2">
                                           <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                          <span>Above {PROPERTY_RANGES[column].high}</span>
+                                          <span>
+                                            Above {PROPERTY_RANGES[column].high}
+                                          </span>
                                         </div>
                                       </div>
                                     </TooltipContent>
@@ -312,8 +377,13 @@ const AntibodyAnalysis = () => {
                             <TableCell
                               key={column}
                               className={`${
-                                column === "Antibody" ? "sticky left-0 bg-white dark:bg-gray-800 z-10" : ""
-                              } ${getCellColor(column, antibody[column])} transition-colors duration-200`}
+                                column === "Antibody"
+                                  ? "sticky left-0 bg-white dark:bg-gray-800 z-10"
+                                  : ""
+                              } ${getCellColor(
+                                column,
+                                antibody[column]
+                              )} transition-colors duration-200`}
                             >
                               {typeof antibody[column] === "number"
                                 ? Number(antibody[column]).toFixed(2)
@@ -322,13 +392,21 @@ const AntibodyAnalysis = () => {
                           ))}
                           <TableCell className="sticky right-0 bg-white dark:bg-gray-800 z-10">
                             <Button
-                              variant={selectedAntibody === antibody.Antibody ? "default" : "outline"}
+                              variant={
+                                selectedAntibody === antibody.Antibody
+                                  ? "default"
+                                  : "outline"
+                              }
                               size="sm"
-                              className="flex items-center gap-2 transition-colors duration-200 dark:bg-gray-700 dark:hover:bg-gray-950" 
-                              onClick={() => handleViewStructure(antibody.Antibody)}
+                              className="flex items-center gap-2 transition-colors duration-200 dark:bg-gray-700 dark:hover:bg-gray-950"
+                              onClick={() =>
+                                handleViewStructure(antibody.Antibody)
+                              }
                             >
                               <Eye className="w-4 h-4" />
-                              {selectedAntibody === antibody.Antibody ? "Hide Structure" : "View Structure"}
+                              {selectedAntibody === antibody.Antibody
+                                ? "Hide Structure"
+                                : "View Structure"}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -345,7 +423,9 @@ const AntibodyAnalysis = () => {
             <Card className="shadow-lg rounded-lg overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-950 text-white p-6">
                 <CardTitle className="flex justify-between items-center">
-                  <span className="text-xl md:text-2xl font-bold">{selectedAntibody} Structure</span>
+                  <span className="text-xl md:text-2xl font-bold">
+                    {selectedAntibody} Structure
+                  </span>
                   <Button
                     className="bg-white text-blue-800 hover:bg-blue-100 dark:bg-gray-800 dark:text-blue-200 dark:hover:bg-gray-700"
                     variant="outline"
@@ -376,7 +456,7 @@ const AntibodyAnalysis = () => {
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default AntibodyAnalysis
+export default AntibodyAnalysis;

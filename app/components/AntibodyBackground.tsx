@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const AntibodyBackground = () => {
   return (
@@ -8,10 +8,10 @@ const AntibodyBackground = () => {
         className="absolute top-0 left-0 h-full pointer-events-none"
         style={{
           backgroundImage: `url('/molstar.gif')`, // Use backticks and ensure the correct path
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'contain',
-          backgroundPosition: 'left center',
-          width: '900px', // Set appropriate width for the left-side design
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "contain",
+          backgroundPosition: "left center",
+          width: "900px", // Set appropriate width for the left-side design
         }}
       ></div>
 
@@ -24,7 +24,9 @@ const AntibodyBackground = () => {
             style={{
               top: `${Math.random() * 100}%`,
               left: `${Math.random() * 100}%`,
-              animation: `float ${10 + i * 1.5}s infinite ease-in-out ${i * 1.5}s`,
+              animation: `float ${10 + i * 1.5}s infinite ease-in-out ${
+                i * 1.5
+              }s`,
             }}
           >
             <svg
@@ -69,7 +71,8 @@ const AntibodyBackground = () => {
       {/* Styles for animations */}
       <style jsx>{`
         @keyframes float {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0) translateX(0);
           }
           25% {
@@ -80,7 +83,8 @@ const AntibodyBackground = () => {
           }
         }
         @keyframes pulse {
-          0%, 100% {
+          0%,
+          100% {
             stroke-width: 4;
           }
           50% {

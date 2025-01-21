@@ -36,7 +36,9 @@ const MolStarView = () => {
 
   return (
     <div
-      className={`min-h-screen py-12 px-4 sm:px-6 lg:px-8 ${darkMode ? "dark bg-[#05042a]" : ""}`}
+      className={`min-h-screen py-12 px-4 sm:px-6 lg:px-8 ${
+        darkMode ? "dark bg-[#05042a]" : ""
+      }`}
     >
       <div className="max-w-full mx-auto bg-white dark:bg-[#242f40] rounded-xl shadow-lg overflow-hidden">
         <div className="p-8">
@@ -47,7 +49,6 @@ const MolStarView = () => {
           {sections.map((section, index) => (
             <div key={index} className="mb-12 last:mb-0">
               <h2 className="text-2xl text-left leading-relaxed  pl-11 dark:text-white mb-4 flex items-center">
-            
                 {section.title}
               </h2>
               <p className="text-gray-700 text-left leading-relaxed mb-6 pl-11 dark:text-white">
@@ -59,7 +60,6 @@ const MolStarView = () => {
             </div>
           ))}
         </div>
-        
       </div>
     </div>
   );

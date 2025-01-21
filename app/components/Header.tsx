@@ -1,34 +1,34 @@
-"use client"
-import React, { useState, useEffect } from "react"
-import { Database, Github, Moon, Sun } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { motion } from "framer-motion"
+"use client";
+import React, { useState, useEffect } from "react";
+import { Database, Github, Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 const Header = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     // Retrieve the dark mode state from localStorage
     if (typeof window !== "undefined") {
-      return localStorage.getItem("darkMode") === "true"
+      return localStorage.getItem("darkMode") === "true";
     }
-    return false
-  })
-  const [isScrolled, setIsScrolled] = useState(false)
+    return false;
+  });
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     // Add or remove the dark class on the root element
-    document.documentElement.classList.toggle("dark", isDarkMode)
+    document.documentElement.classList.toggle("dark", isDarkMode);
     // Persist the dark mode state in localStorage
-    localStorage.setItem("darkMode", isDarkMode)
-  }, [isDarkMode])
+    localStorage.setItem("darkMode", isDarkMode);
+  }, [isDarkMode]);
 
   return (
     <motion.header
@@ -51,7 +51,9 @@ const Header = () => {
           >
             <Link href="/" className="flex items-center space-x-2">
               <Database className="w-8 h-8 text-primary" />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">Antibody Characterization</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                Antibody Characterization
+              </span>
             </Link>
           </motion.div>
           <motion.nav
@@ -82,7 +84,11 @@ const Header = () => {
               size="icon"
               className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
             >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {isDarkMode ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
             </Button>
 
             <a
@@ -97,7 +103,7 @@ const Header = () => {
         </div>
       </div>
     </motion.header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
