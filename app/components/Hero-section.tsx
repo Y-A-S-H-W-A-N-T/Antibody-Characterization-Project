@@ -91,7 +91,8 @@ const HeroSection: React.FC = () => {
     transition={{ duration: 0.8 }}
     className="flex justify-center"> {/* Flexbox for centering */}
       <Image
-        src={require('../components/molstar.gif')}
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        src={require('@/app/components/Assets/molstar.gif')}
         alt={'GIF image'}
         width={100}
         height={200}

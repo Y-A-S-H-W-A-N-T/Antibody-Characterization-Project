@@ -4,9 +4,17 @@ import { Database, Github, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { motion } from "framer-motion"
+
 const Header = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Retrieve the dark mode state from localStorage
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("darkMode") === "true"
+    }
+    return false
+  })
   const [isScrolled, setIsScrolled] = useState(false)
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10)
@@ -14,13 +22,20 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
   useEffect(() => {
+    // Add or remove the dark class on the root element
     document.documentElement.classList.toggle("dark", isDarkMode)
+    // Persist the dark mode state in localStorage
+    localStorage.setItem("darkMode", isDarkMode)
   }, [isDarkMode])
+
   return (
     <motion.header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md" : "bg-transparent"
+        isScrolled
+          ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md"
+          : "bg-transparent"
       }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -46,29 +61,29 @@ const Header = () => {
             transition={{ delay: 0.3 }}
           >
             <Link href="/pages/table-viewer">
-  <Button
-    variant="ghost"
-    className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
-  >
-    Dashboard Analysis
-  </Button>
-</Link>
-<Link href="/pages/documentation">
-  <Button
-    variant="ghost"
-    className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
-  >
-    Documentation
-  </Button>
-</Link>
-<Button
-  onClick={() => setIsDarkMode(!isDarkMode)}
-  variant="ghost"
-  size="icon"
-  className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
->
-  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-</Button>
+              <Button
+                variant="ghost"
+                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
+              >
+                Dashboard Analysis
+              </Button>
+            </Link>
+            <Link href="/pages/documentation">
+              <Button
+                variant="ghost"
+                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
+              >
+                Documentation
+              </Button>
+            </Link>
+            <Button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              variant="ghost"
+              size="icon"
+              className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
 
             <a
               href="https://github.com/Y-A-S-H-W-A-N-T/Antibody-Characterization-Project"
@@ -84,4 +99,5 @@ const Header = () => {
     </motion.header>
   )
 }
+
 export default Header
