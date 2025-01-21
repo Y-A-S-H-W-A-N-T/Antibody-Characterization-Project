@@ -291,36 +291,37 @@ const AntibodyAnalysis = () => {
                             </div>
                           </TableHead>
                         ))}
-                        <TableHead className="sticky right-0 bg-white text-black">Actions</TableHead>
+                        <TableHead className="sticky right-0 bg-white text-black ">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {sortedData.map((antibody, index) => (
-                        <TableRow key={index} className="hover:bg-gray-50 ">
-                          {allColumns.map((column) => (
-                            <TableCell
-                              key={column}
-                              className={`${
-                                column === "Antibody" ? "sticky left-0 bg-white" : ""
-                              } ${getCellColor(column, antibody[column])}`}
-                            >
-                              {typeof antibody[column] === "number"
-                                ? Number(antibody[column]).toFixed(2)
-                                : antibody[column]}
-                            </TableCell>
-                          ))}
-                          <TableCell className="sticky right-0 bg-white">
-                            <Button
-                              variant={selectedAntibody === antibody.Antibody ? "default" : "outline"}
-                              size="sm"
-                              className="flex items-center gap-2"
-                              onClick={() => handleViewStructure(antibody.Antibody)}
-                            >
-                              <Eye className="w-4 h-4" />
-                              {selectedAntibody === antibody.Antibody ? "Hide Structure" : "View Structure"}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
+             <TableRow key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+             {allColumns.map((column) => (
+               <TableCell
+                 key={column}
+                 className={`${
+                   column === "Antibody" ? "sticky left-0 bg-white " : " "
+                 } ${getCellColor(column, antibody[column])} dark:text-black text-black`}
+               >
+                 {typeof antibody[column] === "number"
+                   ? Number(antibody[column]).toFixed(2)
+                   : antibody[column]}
+               </TableCell>
+             ))}
+             <TableCell className="sticky right-0 bg-white  text-white">
+               <Button
+                 variant={selectedAntibody === antibody.Antibody ? "default" : "outline"}
+                 size="sm"
+                 className="flex items-center gap-2"
+                 onClick={() => handleViewStructure(antibody.Antibody)}
+               >
+                 <Eye className="w-4 h-4" />
+                 {selectedAntibody === antibody.Antibody ? "Hide Structure" : "View Structure"}
+               </Button>
+             </TableCell>
+           </TableRow>
+           
                       ))}
                     </TableBody>
                   </Table>
