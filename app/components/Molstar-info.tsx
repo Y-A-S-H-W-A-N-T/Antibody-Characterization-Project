@@ -4,7 +4,7 @@ import { Dna, Microscope, Settings2 } from 'lucide-react';
 
 const MolstarInfo = () => {
   return (
-    <div className="min-h-screen bg-blue-50 dark:bg-gray-900 rounded-2xl m-11  p-8">
+    <div className="min-h-52 bg-blue-50 dark:bg-gray-900 rounded-2xl m-11  p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4 mb-12">
