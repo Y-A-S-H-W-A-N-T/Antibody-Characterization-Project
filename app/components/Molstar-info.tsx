@@ -4,20 +4,20 @@ import { Dna, Microscope, Settings2 } from 'lucide-react';
 
 const MolstarInfo = () => {
   return (
-    <div className="min-h-screen bg-blue-50 rounded-2xl m-11  p-8">
+    <div className="min-h-screen bg-blue-50 dark:bg-gray-900 rounded-2xl m-11  p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl font-bold text-gray-900">            Advanced visualization tool for molecular structures
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">            Advanced visualization tool for molecular structures
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           </p>
         </div>
 
         {/* Main Features */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8 dark:bg-slate-900">
           {/* File Support */}
-          <Card className="p-6 hover:shadow-lg transition-shadow">
+          <Card className="p-6 hover:shadow-lg transition-shadow ">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Dna className="text-blue-600" />
@@ -84,7 +84,7 @@ const MolstarInfo = () => {
         </Card> */}
 
         {/* Research Applications */}
-        <Card className="p-8 bg-white">
+        <Card className="p-8 bg-white dark:bg-gray-950">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-2xl mb-6">
               <Settings2 className="text-green-600" />
@@ -99,15 +99,15 @@ const MolstarInfo = () => {
                 in:
               </p>
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-2">Drug Discovery</h4>
+                <div className="bg-gray-50 p-4 rounded-lg dark:bg-slate-900 dark:text-gray-500">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2 dark:text-white">Drug Discovery</h4>
                   <p>
                     Analyze molecular interactions and binding sites with precision, supporting 
                     structure-based drug design and optimization.
                   </p>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-2">Structural Biology</h4>
+                <div className="bg-gray-50 p-4 rounded-lg dark:bg-slate-900 dark:text-gray-500">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2 dark:text-white">Structural Biology</h4>
                   <p>
                     Study protein structures, conformational changes, and molecular dynamics with 
                     advanced visualization capabilities.
