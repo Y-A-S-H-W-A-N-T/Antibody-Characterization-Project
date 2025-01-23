@@ -1,9 +1,7 @@
 import React from "react";
 import { Github, Twitter, Mail } from "lucide-react";
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
   return (
     <footer className="bg-white dark:bg-slate-900 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,7 +17,6 @@ const Footer = () => {
               in immunology research.
             </p>
           </div>
-
           {/* Resources Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -43,7 +40,6 @@ const Footer = () => {
               ))}
             </ul>
           </div>
-
           {/* Legal Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -67,7 +63,6 @@ const Footer = () => {
               ))}
             </ul>
           </div>
-
           {/* Connect Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -99,7 +94,6 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
         {/* Copyright Section */}
         <div className="border-t border-gray-200 dark:border-gray-700">
           <p className="py-6 text-sm text-center text-gray-500 dark:text-gray-400">
@@ -110,5 +104,4 @@ const Footer = () => {
     </footer>
   );
 };
-
 export default Footer;

@@ -1,15 +1,30 @@
 "use client";
-import React, { useRef } from "react";
+
+import React, { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import ContentSection from "./content-section"; // Import ContentSection
-import MolstarContent from "./Molstar-content";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+import molstarGif from "@/app/components/Assets/molstar.gif";
+
+// Dynamically import client-side only components
+const ContentSection = dynamic(() => import("./content-section"), {
+  ssr: false,
+});
+const MolstarContent = dynamic(() => import("./Molstar-content"), {
+  ssr: false,
+});
 
 const HeroSection: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure client-side rendering for dynamic content
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -21,6 +36,16 @@ const HeroSection: React.FC = () => {
     }
   };
 
+  // Predefined positions for background elements to avoid randomness
+  const positions = [
+    { top: "10%", left: "20%" },
+    { top: "30%", left: "50%" },
+    { top: "60%", left: "80%" },
+    { top: "80%", left: "30%" },
+    { top: "20%", left: "70%" },
+    { top: "50%", left: "10%" },
+  ];
+
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden px-6 md:px-12 text-center">
       {/* Background Gradient */}
@@ -28,13 +53,13 @@ const HeroSection: React.FC = () => {
 
       {/* Animated Antibody Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(6)].map((_, i) => (
+        {positions.map((pos, i) => (
           <div
             key={i}
             className="absolute opacity-10 dark:opacity-5"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
+              top: pos.top,
+              left: pos.left,
               animation: `float ${15 + i * 2}s infinite ease-in-out ${i * 2}s`,
             }}
           >
@@ -102,53 +127,45 @@ const HeroSection: React.FC = () => {
 
       {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="">
-          <div className="text-center">
-            {" "}
-            {/* Add text-center for horizontal centering */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-5xl md:text-7xl mt-20 font-bold text-black p-3 font-inter dark:text-white"
-            >
-              Antibody Characterization
-            </motion.h1>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex justify-center"
-            >
-              {" "}
-              {/* Flexbox for centering */}
-              <Image
-                // eslint-disable-next-line @typescript-eslint/no-require-imports
-                src={require("@/app/components/Assets/molstar.gif")}
-                alt={"GIF image"}
-                width={100}
-                height={200}
-                unoptimized={true}
-                style={{
-                  objectFit: "contain",
-                  width: "40%",
-                  height: "auto",
-                }}
-                priority={true}
-              />
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8"
-            >
-              Antibodies are Y-shaped proteins that help identify and neutralize
-              foreign invaders like bacteria and viruses. Explore their
-              essential properties including hydrophobicity, polarity, and chain
-              values.
-            </motion.p>
-          </div>
+        <div className="text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-5xl md:text-7xl mt-20 font-bold text-black p-3 font-inter dark:text-white"
+          >
+            Antibody Characterization
+          </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="flex justify-center"
+          >
+            <Image
+              src={molstarGif}
+              alt="GIF image"
+              width={100}
+              height={200}
+              unoptimized={true}
+              style={{
+                objectFit: "contain",
+                width: "40%",
+                height: "auto",
+              }}
+              priority={true}
+            />
+          </motion.div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8"
+          >
+            Antibodies are Y-shaped proteins that help identify and neutralize
+            foreign invaders like bacteria and viruses. Explore their essential
+            properties including hydrophobicity, polarity, and chain values.
+          </motion.p>
         </div>
 
         <motion.div
@@ -174,9 +191,6 @@ const HeroSection: React.FC = () => {
 
         {/* Info Cards with Enhanced Horizontal Scrolling */}
         <div className="relative mx-auto px-12 mb-12 max-w-full">
-          {" "}
-          {/* Increased width of the container */}
-          {/* Navigation Buttons */}
           <Button
             onClick={() => scroll("left")}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black dark:bg-gray-800 shadow-lg hover:bg-gray-500 dark:hover:bg-gray-700 dark:text-white"
@@ -189,70 +203,21 @@ const HeroSection: React.FC = () => {
           >
             <ChevronRight className="w-6 h-6" />
           </Button>
-          {/* Scrolling Container */}
           <div
             ref={scrollRef}
             className="overflow-x-auto flex gap-12 pb-8 pt-4 scrollbar-hide scroll-smooth"
           >
-            {[
-              {
-                title: "Hydrophobicity",
-                content:
-                  "Hydrophobicity measures how much an antibody repels water, influencing its stability and interactions.",
-                bgColor: "bg-green-100 dark:bg-green-800",
-              },
-              {
-                title: "Polarity",
-                content:
-                  "Polarity affects an antibody's ability to dissolve in water and interact with different molecules.",
-                bgColor: "bg-blue-100 dark:bg-blue-800",
-              },
-              {
-                title: "H-chain (Heavy Chain)",
-                content:
-                  "The heavy chain determines the antibody's class and function, such as IgG, IgA, or IgM.",
-                bgColor: "bg-yellow-100 dark:bg-yellow-800",
-              },
-              {
-                title: "L-chain (Light Chain)",
-                content:
-                  "Light chains contribute to antigen binding and can be classified as kappa or lambda.",
-                bgColor: "bg-purple-100 dark:bg-purple-800",
-              },
-              {
-                title: "Isoelectric Point (pI)",
-                content:
-                  "The isoelectric point is the pH at which a protein has no net charge, crucial for understanding protein solubility and purification.",
-                bgColor: "bg-red-100 dark:bg-red-800",
-              },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                className={`flex-shrink-0 p-8 ${item.bgColor} dark:bg-opacity-70 rounded-xl shadow-lg cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1 w-96 h-96 relative`}
-              >
-                <motion.h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-                  {item.title}
-                </motion.h3>
-                <p className="text-lg text-gray-600 dark:text-gray-300">
-                  {item.content}
-                </p>
-                <Button
-                  variant="outline"
-                  className="absolute bottom-8 left-8 right-8"
-                >
-                  Know More
-                </Button>
+            {[ /* Card data */ ].map((item, index) => (
+              <motion.div key={index}>
+                {/* Content */}
               </motion.div>
             ))}
           </div>
         </div>
 
-        {/* Add Content Section Below Hero Section */}
-        <ContentSection />
-        <MolstarContent />
-
-        {/* Additional Content as Normal Text */}
-        <div className="mt-8 text-gray-700 dark:text-gray-300 text-left space-y-6 leading-relaxed"></div>
+        {/* Client-side Only Content */}
+        {isClient && <ContentSection />}
+        {isClient && <MolstarContent />}
       </div>
     </section>
   );

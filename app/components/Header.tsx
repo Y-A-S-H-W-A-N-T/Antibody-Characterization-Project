@@ -14,34 +14,52 @@ const Header = () => {
     return false;
   });
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
+    const handleFullScreenChange = () => {
+      setIsFullScreen(document.fullscreenElement !== null);
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    document.addEventListener("fullscreenchange", handleFullScreenChange);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("fullscreenchange", handleFullScreenChange);
+    };
   }, []);
 
   useEffect(() => {
     // Add or remove the dark class on the root element
     document.documentElement.classList.toggle("dark", isDarkMode);
     // Persist the dark mode state in localStorage
-    localStorage.setItem("darkMode", isDarkMode);
+    // localStorage.setItem("darkMode", isDarkMode);
   }, [isDarkMode]);
 
   return (
     <motion.header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled
-          ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md"
-          : "bg-transparent"
-      }`}
+      // className={`sticky top-0   transition-all duration-300 ${
+      //   isScrolled
+      //     ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md"
+      //     : "bg-transparent"
+      // } ${
+      //   isFullScreen
+      //     ? "h-12 bg-transparent shadow-none flex justify-center items-center"
+      //     : ""
+      // }`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div
+        className={`container mx-auto px-4 sm:px-6 lg:px-8 ${
+          isFullScreen ? "hidden" : ""
+        }`}
+      >
         <div className="flex h-16 items-center justify-between">
           <motion.div
             className="flex items-center space-x-4"
@@ -52,12 +70,14 @@ const Header = () => {
             <Link href="/" className="flex items-center space-x-2">
               <Database className="w-8 h-8 text-primary" />
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                Antibody Characterization
+                Antibody Analysis Platform
               </span>
             </Link>
           </motion.div>
           <motion.nav
-            className="hidden md:flex items-center space-x-6"
+            className={`hidden md:flex items-center space-x-6 ${
+              isFullScreen ? "hidden" : ""
+            }`}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -82,7 +102,9 @@ const Header = () => {
               onClick={() => setIsDarkMode(!isDarkMode)}
               variant="ghost"
               size="icon"
-              className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors"
+              className={`text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors ${
+                isFullScreen ? "hidden" : ""
+              }`}
             >
               {isDarkMode ? (
                 <Sun className="w-5 h-5" />
@@ -91,11 +113,13 @@ const Header = () => {
               )}
             </Button>
 
-            <a
-              href="https://github.com/Y-A-S-H-W-A-N-T/Antibody-Characterization-Project"
+            
+              <a href="https://github.com/Y-A-S-H-W-A-N-T/Antibody-Characterization-Project"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-foreground transition-colors"
+              className={`text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-foreground transition-colors ${
+                isFullScreen ? "hidden" : ""
+              }`}
             >
               <Github className="w-5 h-5" />
             </a>

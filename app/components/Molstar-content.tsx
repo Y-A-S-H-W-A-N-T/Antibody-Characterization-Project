@@ -35,12 +35,12 @@ const MolStarView = () => {
   // const toggleDarkMode = () => setDarkMode(!darkMode);
 
   return (
-    <div
+    <div suppressHydrationWarning
       className={`min-h-screen py-12 px-4 sm:px-6 lg:px-8 ${
         darkMode ? "dark bg-[#05042a]" : ""
       }`}
     >
-      <div className="max-w-full mx-auto bg-white dark:bg-[#242f40] rounded-xl shadow-lg overflow-hidden">
+      <div suppressHydrationWarning className="max-w-full mx-auto bg-white dark:bg-[#242f40] rounded-xl shadow-lg overflow-hidden">
         <div className="p-8">
           <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">
             What is MolStar View
